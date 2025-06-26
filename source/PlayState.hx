@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 class PlayState extends FlxState
 {
+	var bg:FlxSprite;
 	var ball:FlxSprite;
 	var paddle1:FlxSprite;
 	var paddle2:FlxSprite;
@@ -22,15 +23,23 @@ class PlayState extends FlxState
 	override public function create()
 	{
 		super.create();
-		bgColor = 0xFFFF0000;
+		bgColor = 0xFF2D0000;
+
+		bg = new FlxSprite().loadGraphic('assets/images/bg.png');
+		bg.alpha = .5;
+		add(bg);
+		
 		addBall();
 
-		paddle1 = new FlxSprite(20).makeGraphic(15, 100, 0xFF00FFAA);
+		paddle1 = new FlxSprite(20).loadGraphic('assets/images/paddle.png');
+		paddle1.color = 0xFF00FFAA;
 		paddle1.screenCenter(Y);
 		paddle1.immovable = true;
 		add(paddle1);
 
-		paddle2 = new FlxSprite().makeGraphic(15, 100, 0xFF465FF0);
+		paddle2 = new FlxSprite(20).loadGraphic('assets/images/paddle.png');
+		paddle2.color = 0xFF465FF0;
+		paddle2.flipX = true;
 		paddle2.x = FlxG.width - 35;
 		paddle2.screenCenter(Y);
 		paddle2.immovable = true;
@@ -47,7 +56,9 @@ class PlayState extends FlxState
 		add(floorbottom);
 
 		startBallMovement();
-		FlxG.sound.playMusic('assets/music/FuckBalls.ogg');
+		FlxG.sound.playMusic('assets/music/FuckBalls.ogg', .3);
+
+		FlxG.sound.play('assets/sounds/hello.ogg', .7);
 	}
 
 	override public function update(elapsed:Float)
@@ -80,9 +91,9 @@ class PlayState extends FlxState
 			if (FlxG.collide(paddle1, ball))
 			{
 				ball.speed += 0.1;
-				if (ball.speed > 3)
+				if (ball.speed > 2)
 				{
-					ball.speed = 1.6;
+					ball.speed = 2;
 				}
 
 				ball.velocity.x = ball.velocity.x * 1.1;
@@ -97,13 +108,14 @@ class PlayState extends FlxState
 					startBallMovement();
 					FlxG.sound.music.pitch += 0.1;
 				}
+				FlxG.sound.play('assets/sounds/ballhit' + FlxG.random.int(1, 2) + '.ogg');
 			}
 			else if (FlxG.collide(paddle2, ball))
 			{
 				ball.speed += 0.1;
-				if (ball.speed > 3)
+				if (ball.speed > 2)
 				{
-					ball.speed = 1.6;
+					ball.speed = 2;
 				}
 
 				ball.velocity.x = ball.velocity.x * 1.05;
@@ -118,10 +130,17 @@ class PlayState extends FlxState
 					startBallMovement();
 					FlxG.sound.music.pitch += 0.1;
 				}
+				FlxG.sound.play('assets/sounds/ballhit' + FlxG.random.int(1, 2) + '.ogg');
 			}
 
-			FlxG.collide(ball, floortop);
-			FlxG.collide(ball, floorbottom);
+			if (FlxG.collide(ball, floortop))
+			{
+				FlxG.sound.play('assets/sounds/wallhit' + FlxG.random.int(1, 3) + '.ogg');
+			}
+			if (FlxG.collide(ball, floorbottom))
+			{
+				FlxG.sound.play('assets/sounds/wallhit' + FlxG.random.int(1, 3) + '.ogg');
+			}
 
 			if (ball.x > FlxG.width || ball.x + ball.width < 0)
 			{
@@ -130,7 +149,10 @@ class PlayState extends FlxState
 
 			for (ball2 in balls)
 			{
-				FlxG.collide(ball, ball2);
+				if (FlxG.collide(ball, ball2))
+				{
+					FlxG.sound.play('assets/sounds/ballhit' + FlxG.random.int(1, 2) + '.ogg');
+				}
 			}
 		}
 	}
@@ -147,7 +169,7 @@ class PlayState extends FlxState
 	function addBall():Void
 	{
 		var ball:ShitBall = new ShitBall();
-		ball.makeGraphic(30, 30, 0xFF000000);
+		ball.loadGraphic('assets/images/ball.png');
 		ball.screenCenter();
 		ball.elasticity = 1;
 		add(ball);
@@ -155,6 +177,7 @@ class PlayState extends FlxState
 		if (balls.length > 0)
 		{
 			ball.y = FlxG.random.float(0, FlxG.height);
+			FlxG.sound.play('assets/sounds/shitball.ogg', .7).pitch = FlxG.random.float(.5, 2);	
 		}
 
 		balls.push(ball);
