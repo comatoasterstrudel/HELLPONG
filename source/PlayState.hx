@@ -176,6 +176,10 @@ class PlayState extends FlxState
 
 				ball.velocity.y = (paddle1.velocity.y / 2) * ball.speed;
 
+				if (ball.speed >= 1.7)
+				{
+					popball(ball);
+				}
 				score++;
 
 				if (score % 5 == 0)
@@ -198,6 +202,10 @@ class PlayState extends FlxState
 
 				ball.velocity.y = (paddle2.velocity.y / 2) * ball.speed;
 
+				if (ball.speed >= 1.7)
+				{
+					popball(ball);
+				}
 				score++;
 
 				if (score % 5 == 0)
@@ -275,6 +283,31 @@ class PlayState extends FlxState
 
 		balls.push(ball);
 	}
+	function popball(ball:ShitBall):Void
+	{
+		var fun = new FlxSprite().loadGraphic('assets/images/spawn.png');
+		fun.color = 0xFFFF0000;
+		fun.setPosition(ball.x, ball.y);
+		fun.alpha = .35;
+		add(fun);
+
+		fun.scale.set(1.3, 1.3);
+
+		FlxTween.tween(fun.scale, {x: 0, y: 0}, 1, {ease: FlxEase.quartOut});
+		FlxTween.tween(fun, {alpha: 0}, 1, {
+			ease: FlxEase.quartOut,
+			onComplete: function(f):Void
+			{
+				fun.destroy();
+			}
+		});
+
+		ball.destroy();
+		balls.remove(ball);
+
+		FlxG.sound.play('assets/sounds/headpop.ogg').pitch = FlxG.random.float(.5, 2);
+	}
+	
 	function boundTo(value:Float, min:Float, max:Float):Float
 	{
 		var newValue:Float = value;

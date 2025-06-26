@@ -87,5 +87,7 @@
 
 	<!-- _________________________________ Custom _______________________________ -->
 
+		<icon path="assets/images/ball.png" />
+
 	<!--Place custom nodes like icons here-->
 </project>
