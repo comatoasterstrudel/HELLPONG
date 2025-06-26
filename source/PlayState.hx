@@ -1,15 +1,26 @@
 package;
 
+import WiggleShader.WiggleEffectType;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.math.FlxMath;
+import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+
 class PlayState extends FlxState
 {
 	var bg:FlxSprite;
+	var wiggleShader:WiggleShader;
+	
 	var ball:FlxSprite;
 	var paddle1:FlxSprite;
 	var paddle2:FlxSprite;
 
+	var paddle1Pos:Bool = false;
+	var paddle2Pos:Bool = true;
+	
 	var speed:Float = 300;
 	var ballspeed:Float = 150;
 
@@ -20,6 +31,11 @@ class PlayState extends FlxState
 
 	var score:Int = 0;
 	
+	var scorecounter:FlxText;
+
+	var paddleTarget1:Float = 0;
+	var paddleTarget2:Float = 0;
+
 	override public function create()
 	{
 		super.create();
@@ -28,6 +44,28 @@ class PlayState extends FlxState
 		bg = new FlxSprite().loadGraphic('assets/images/bg.png');
 		bg.alpha = .5;
 		add(bg);
+		
+		wiggleShader = new WiggleShader();
+		wiggleShader.effectType = WiggleEffectType.DREAMY;
+		wiggleShader.waveAmplitude = 0.028;
+		wiggleShader.waveFrequency = 2;
+		wiggleShader.waveSpeed = 1.8; // fasto
+		wiggleShader.shader.uTime.value = [500]; // from 4mbr0s3 2
+		wiggleShader.shader.uAlpha.value = [0.5];
+		bg.shader = wiggleShader.shader;
+
+		scorecounter = new FlxText(100, 100, 0, '', 60);
+		scorecounter.color = 0xFFFF0000;
+		scorecounter.font = 'assets/fonts/HelpMe-Yz7Lq.ttf';
+		scorecounter.alignment = CENTER;
+		scorecounter.y = 0;
+		scorecounter.alpha = .5;
+		add(scorecounter);
+
+		FlxTween.tween(scorecounter, {y: FlxG.height - 100}, 10, {ease: FlxEase.smoothStepInOut, type: PINGPONG});
+		FlxTween.tween(scorecounter, {x: FlxG.width - 100}, 6, {ease: FlxEase.smoothStepInOut, type: PINGPONG});
+
+		FlxG.mouse.visible = false;
 		
 		addBall();
 
@@ -45,6 +83,9 @@ class PlayState extends FlxState
 		paddle2.immovable = true;
 		add(paddle2);
 
+		paddleTarget1 = paddle1.x;
+		paddleTarget2 = paddle2.x;
+
 		floortop = new FlxSprite().makeGraphic(FlxG.width, 1, 0xFFB94343);
 		floortop.y = 1;
 		floortop.immovable = true;
@@ -56,7 +97,7 @@ class PlayState extends FlxState
 		add(floorbottom);
 
 		startBallMovement();
-		FlxG.sound.playMusic('assets/music/FuckBalls.ogg', .3);
+		FlxG.sound.playMusic('assets/music/FuckBalls.ogg', .2);
 
 		FlxG.sound.play('assets/sounds/hello.ogg', .7);
 	}
@@ -74,6 +115,34 @@ class PlayState extends FlxState
 			paddle2.velocity.y = speed;
 		}
 
+		if (!paddle1Pos && FlxG.keys.justPressed.D)
+		{
+			paddleTarget1 = paddleTarget1 + 40;
+			paddle1Pos = true;
+
+			FlxG.sound.play('assets/sounds/fling' + FlxG.random.int(1, 4) + '.ogg', .35);
+		}
+		else if (paddle1Pos && FlxG.keys.justPressed.A)
+		{
+			paddleTarget1 = paddleTarget1 - 40;
+			paddle1Pos = false;
+
+			FlxG.sound.play('assets/sounds/pull' + FlxG.random.int(1, 2) + '.ogg', .35);
+		}
+
+		if (!paddle2Pos && FlxG.keys.justPressed.RIGHT)
+		{
+			paddleTarget2 = paddleTarget2 + 40;
+			paddle2Pos = true;
+			FlxG.sound.play('assets/sounds/pull' + FlxG.random.int(1, 2) + '.ogg', .35);
+		}
+		else if (paddle2Pos && FlxG.keys.justPressed.LEFT)
+		{
+			paddleTarget2 = paddleTarget2 - 40;
+			paddle2Pos = false;
+			FlxG.sound.play('assets/sounds/fling' + FlxG.random.int(1, 4) + '.ogg', .35);
+		}
+		
 		paddle1.velocity.y = 0;
 
 		if (FlxG.keys.pressed.W && paddle1.y > -1)
@@ -85,7 +154,14 @@ class PlayState extends FlxState
 			paddle1.velocity.y = speed;
 		}
 		
-		super.update(elapsed);
+		scorecounter.text = Std.string(score);
+
+		wiggleShader.update(elapsed);
+		wiggleShader.waveAmplitude = 0.028 + (0.002 * score);
+
+		paddle1.x = FlxMath.lerp(paddleTarget1, paddle1.x, boundTo(1 - (elapsed * (paddle1Pos ? 20 : 5)), 0, 1));
+		paddle2.x = FlxMath.lerp(paddleTarget2, paddle2.x, boundTo(1 - (elapsed * (paddle2Pos ? 5 : 20)), 0, 1));
+		
 		for (ball in balls)
 		{
 			if (FlxG.collide(paddle1, ball))
@@ -155,6 +231,7 @@ class PlayState extends FlxState
 				}
 			}
 		}
+		super.update(elapsed);
 	}
 
 	function startBallMovement():Void
@@ -178,8 +255,33 @@ class PlayState extends FlxState
 		{
 			ball.y = FlxG.random.float(0, FlxG.height);
 			FlxG.sound.play('assets/sounds/shitball.ogg', .7).pitch = FlxG.random.float(.5, 2);	
+			var fun = new FlxSprite().loadGraphic('assets/images/spawn.png');
+			fun.setPosition(ball.x, ball.y);
+			fun.alpha = .5;
+			add(fun);
+
+			fun.scale.set(1.5, 1.5);
+
+			FlxTween.tween(fun.scale, {x: 0, y: 0}, 1, {ease: FlxEase.quartOut});
+			FlxTween.tween(fun, {alpha: 0}, 1, {
+				ease: FlxEase.quartOut,
+				onComplete: function(f):Void
+				{
+					fun.destroy();
+				}
+			});
 		}
+		add(ball);
 
 		balls.push(ball);
+	}
+	function boundTo(value:Float, min:Float, max:Float):Float
+	{
+		var newValue:Float = value;
+		if (newValue < min)
+			newValue = min;
+		else if (newValue > max)
+			newValue = max;
+		return newValue;
 	}
 }
