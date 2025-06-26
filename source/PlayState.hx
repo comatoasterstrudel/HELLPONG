@@ -47,6 +47,7 @@ class PlayState extends FlxState
 		add(floorbottom);
 
 		startBallMovement();
+		FlxG.sound.playMusic('assets/music/FuckBalls.ogg');
 	}
 
 	override public function update(elapsed:Float)
@@ -81,7 +82,7 @@ class PlayState extends FlxState
 				ball.speed += 0.1;
 				if (ball.speed > 3)
 				{
-					ball.speed = 3;
+					ball.speed = 1.6;
 				}
 
 				ball.velocity.x = ball.velocity.x * 1.1;
@@ -94,6 +95,7 @@ class PlayState extends FlxState
 				{
 					addBall();
 					startBallMovement();
+					FlxG.sound.music.pitch += 0.1;
 				}
 			}
 			else if (FlxG.collide(paddle2, ball))
@@ -101,7 +103,7 @@ class PlayState extends FlxState
 				ball.speed += 0.1;
 				if (ball.speed > 3)
 				{
-					ball.speed = 3;
+					ball.speed = 1.6;
 				}
 
 				ball.velocity.x = ball.velocity.x * 1.05;
@@ -114,6 +116,7 @@ class PlayState extends FlxState
 				{
 					addBall();
 					startBallMovement();
+					FlxG.sound.music.pitch += 0.1;
 				}
 			}
 

@@ -5,6 +5,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.text.FlxText;
+import flixel.util.FlxTimer;
 class LossState extends FlxState
 {
     var spaceToPlay:FlxText;
@@ -16,17 +17,16 @@ class LossState extends FlxState
 		bgColor = 0xFF000000;
 		
 		spaceToPlay = new FlxText(100, 300, 0,
-			'FUCK.', 10);
+		'FUCK.', 20);
 		spaceToPlay.color = 0xFF980202;
 		spaceToPlay.alignment = CENTER;
 		spaceToPlay.screenCenter();
 		add(spaceToPlay);   
-	}
+		FlxG.sound.music.stop();
 
-	override public function update(elapsed:Float)
-	{
-		if(FlxG.keys.justPressed.ANY){
+		new FlxTimer().start(3, function(d):Void
+		{
 			FlxG.switchState(new MenuState());
-		}
+		});
 	}
 }

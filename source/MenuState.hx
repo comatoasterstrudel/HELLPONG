@@ -22,6 +22,7 @@ class MenuState extends FlxState
 		spaceToPlay.screenCenter(X);
 		add(spaceToPlay);   
 		FlxG.mouse.visible = false;
+		FlxG.sound.playMusic('assets/music/ShitBalls.ogg');
 	}
 
 	override public function update(elapsed:Float)
