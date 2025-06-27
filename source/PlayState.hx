@@ -1,5 +1,6 @@
 package;
 
+import Discord.DiscordClient;
 import WiggleShader.WiggleEffectType;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -8,7 +9,6 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-
 class PlayState extends FlxState
 {
 	var bg:FlxSprite;
@@ -102,6 +102,7 @@ class PlayState extends FlxState
 		FlxG.sound.playMusic('assets/music/FuckBalls.ogg', .2);
 
 		FlxG.sound.play('assets/sounds/hello.ogg', .7);
+		DiscordClient.changePresence('IN THE CAGE', null);
 	}
 
 	override public function update(elapsed:Float)

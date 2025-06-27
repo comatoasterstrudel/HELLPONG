@@ -1,10 +1,13 @@
 package;
 
+import Discord.DiscordClient;
 import Sys;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.text.FlxText;
+import flixel.util.FlxTimer;
+
 class CreditState extends FlxState
 {
     var spaceToPlay:FlxText;
@@ -14,6 +17,8 @@ class CreditState extends FlxState
 	public static var shit:Bool = false;
 	
 	var tortute:FlxSprite;
+	
+	var busy:Bool = true;
 	
 	override public function create()
 	{
@@ -43,15 +48,23 @@ class CreditState extends FlxState
 		add(tortute);
 		
 		FlxG.sound.play('assets/sounds/die' + FlxG.random.int(1, 4) + '.ogg', .7);
+		new FlxTimer().start(0.1, function(d):Void
+		{
+			busy = false;
+		});
+		DiscordClient.changePresence('CREDITS', null);
 	}
 
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		if (Controls.getControl('BACK', 'RELEASE'))
+		if (!busy)
 		{
-			FlxG.switchState(new MenuState());
+			if (Controls.getControl('BACK', 'RELEASE'))
+			{
+				FlxG.switchState(new MenuState());
+			}
 		}
 	}
 }

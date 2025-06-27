@@ -1,11 +1,13 @@
 package;
 
+import Discord.DiscordClient;
 import Sys;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.text.FlxText;
+import flixel.util.FlxTimer;
 
 class MenuState extends FlxState
 {
@@ -14,6 +16,8 @@ class MenuState extends FlxState
 	var bg:FlxSprite;
 
 	var logo:FlxSprite;
+	
+	var busy:Bool = true;
 	
 	override public function create()
 	{
@@ -54,24 +58,33 @@ class MenuState extends FlxState
 			CreditState.shit = false;
 		}
 		FlxG.sound.play('assets/sounds/hellpong.ogg');
+		new FlxTimer().start(0.1, function(d):Void
+		{
+			busy = false;
+		});
+
+		DiscordClient.changePresence('MENU', null);
 	}
 
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		if (Controls.getControl('ACCEPT', 'RELEASE'))
+		if (!busy)
 		{
-			FlxG.switchState(new PlayState());
+			if (Controls.getControl('ACCEPT', 'RELEASE'))
+			{
+				FlxG.switchState(new PlayState());
+			}
+			if (Controls.getControl('CREDITS', 'RELEASE'))
+			{
+				FlxG.switchState(new CreditState());
+			}
+			#if windows
+			if (Controls.getControl('BACK', 'RELEASE'))
+			{
+				Sys.exit(1);
+			}
+			#end	
 		}
-		if (Controls.getControl('CREDITS', 'RELEASE'))
-		{
-			FlxG.switchState(new CreditState());
-		}
-		#if windows
-		if (Controls.getControl('BACK', 'RELEASE'))
-		{
-			Sys.exit(1);
-		}
-		#end
 	}
 }
