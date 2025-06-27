@@ -36,6 +36,8 @@ class PlayState extends FlxState
 	var paddleTarget1:Float = 0;
 	var paddleTarget2:Float = 0;
 
+	public static var thescore:Int = 0;
+	
 	override public function create()
 	{
 		super.create();
@@ -106,23 +108,23 @@ class PlayState extends FlxState
 	{
 		paddle2.velocity.y = 0;
 
-		if (FlxG.keys.pressed.UP && paddle2.y > -1)
+		if (Controls.getControl('UP2', 'HOLD') && paddle2.y > -1)
 		{
 			paddle2.velocity.y = -speed;
 		}
-		else if (FlxG.keys.pressed.DOWN && paddle2.y + paddle2.height < FlxG.height)
+		else if (Controls.getControl('DOWN2', 'HOLD') && paddle2.y + paddle2.height < FlxG.height)
 		{
 			paddle2.velocity.y = speed;
 		}
 
-		if (!paddle1Pos && FlxG.keys.justPressed.D)
+		if (!paddle1Pos && Controls.getControl('RIGHT', 'RELEASE'))
 		{
 			paddleTarget1 = paddleTarget1 + 40;
 			paddle1Pos = true;
 
 			FlxG.sound.play('assets/sounds/fling' + FlxG.random.int(1, 4) + '.ogg', .35);
 		}
-		else if (paddle1Pos && FlxG.keys.justPressed.A)
+		else if (paddle1Pos && Controls.getControl('LEFT', 'RELEASE'))
 		{
 			paddleTarget1 = paddleTarget1 - 40;
 			paddle1Pos = false;
@@ -130,13 +132,13 @@ class PlayState extends FlxState
 			FlxG.sound.play('assets/sounds/pull' + FlxG.random.int(1, 2) + '.ogg', .35);
 		}
 
-		if (!paddle2Pos && FlxG.keys.justPressed.RIGHT)
+		if (!paddle2Pos && Controls.getControl('RIGHT2', 'HOLD'))
 		{
 			paddleTarget2 = paddleTarget2 + 40;
 			paddle2Pos = true;
 			FlxG.sound.play('assets/sounds/pull' + FlxG.random.int(1, 2) + '.ogg', .35);
 		}
-		else if (paddle2Pos && FlxG.keys.justPressed.LEFT)
+		else if (paddle2Pos && Controls.getControl('LEFT2', 'RELEASE'))
 		{
 			paddleTarget2 = paddleTarget2 - 40;
 			paddle2Pos = false;
@@ -145,11 +147,11 @@ class PlayState extends FlxState
 		
 		paddle1.velocity.y = 0;
 
-		if (FlxG.keys.pressed.W && paddle1.y > -1)
+		if (Controls.getControl('UP', 'HOLD') && paddle1.y > -1)
 		{
 			paddle1.velocity.y = -speed;
 		}
-		else if (FlxG.keys.pressed.S && paddle1.y + paddle1.height < FlxG.height)
+		else if (Controls.getControl('DOWN', 'HOLD') && paddle1.y + paddle1.height < FlxG.height)
 		{
 			paddle1.velocity.y = speed;
 		}
@@ -176,6 +178,8 @@ class PlayState extends FlxState
 
 				ball.velocity.y = (paddle1.velocity.y / 2) * ball.speed;
 
+				ball.velocity.y += FlxG.random.float(-30, 30);
+
 				if (ball.speed >= 1.7)
 				{
 					popball(ball);
@@ -184,7 +188,7 @@ class PlayState extends FlxState
 
 				if (score % 5 == 0)
 				{
-					addBall();
+					addBall(paddle1);
 					startBallMovement();
 					FlxG.sound.music.pitch += 0.1;
 				}
@@ -202,6 +206,8 @@ class PlayState extends FlxState
 
 				ball.velocity.y = (paddle2.velocity.y / 2) * ball.speed;
 
+				ball.velocity.y += FlxG.random.float(-30, 30);
+				
 				if (ball.speed >= 1.7)
 				{
 					popball(ball);
@@ -210,7 +216,7 @@ class PlayState extends FlxState
 
 				if (score % 5 == 0)
 				{
-					addBall();
+					addBall(paddle2);
 					startBallMovement();
 					FlxG.sound.music.pitch += 0.1;
 				}
@@ -228,6 +234,7 @@ class PlayState extends FlxState
 
 			if (ball.x > FlxG.width || ball.x + ball.width < 0)
 			{
+				thescore = score;
 				FlxG.switchState(new LossState());
 			}
 
@@ -236,6 +243,8 @@ class PlayState extends FlxState
 				if (FlxG.collide(ball, ball2))
 				{
 					FlxG.sound.play('assets/sounds/ballhit' + FlxG.random.int(1, 2) + '.ogg');
+					ball.velocity.y += FlxG.random.float(-50, 50);
+					ball2.velocity.y += FlxG.random.float(-50, 50);
 				}
 			}
 		}
@@ -251,7 +260,7 @@ class PlayState extends FlxState
 		}
 	}
 
-	function addBall():Void
+	function addBall(?paddle:FlxSprite):Void
 	{
 		var ball:ShitBall = new ShitBall();
 		ball.loadGraphic('assets/images/ball.png');
@@ -261,7 +270,12 @@ class PlayState extends FlxState
 
 		if (balls.length > 0)
 		{
-			ball.y = FlxG.random.float(0, FlxG.height);
+			ball.y = paddle.y + paddle.height / 2 - ball.height / 2 + FlxG.random.float(-60, 60);
+			if (ball.y < 1)
+				ball.y = 1;
+			if (ball.y + ball.height > FlxG.height)
+				ball.y = FlxG.height - ball.height;
+			
 			FlxG.sound.play('assets/sounds/shitball.ogg', .7).pitch = FlxG.random.float(.5, 2);	
 			var fun = new FlxSprite().loadGraphic('assets/images/spawn.png');
 			fun.setPosition(ball.x, ball.y);

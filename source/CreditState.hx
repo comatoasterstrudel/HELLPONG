@@ -49,7 +49,7 @@ class CreditState extends FlxState
 	{
 		super.update(elapsed);
 
-		if (FlxG.keys.justReleased.ESCAPE)
+		if (Controls.getControl('BACK', 'RELEASE'))
 		{
 			FlxG.switchState(new MenuState());
 		}

@@ -4,7 +4,9 @@ import Sys;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.input.gamepad.FlxGamepad;
 import flixel.text.FlxText;
+
 class MenuState extends FlxState
 {
     var spaceToPlay:FlxText;
@@ -29,10 +31,14 @@ class MenuState extends FlxState
 		bgColor = 0xFF341717;
 
 		spaceToPlay = new FlxText(100, 300, 0,
-		'PRESS SPACE TO PLAY HELLPONG\n\nPRESS CONTROL TO VIEW CREDITS', 15);
-		#if windows
-		spaceToPlay.text += '\n\nPRESS ESCAPE TO LEAVE FOREVER AND NOT COME BACK';
-		#end
+			'PRESS SPACE TO PLAY HELLPONG\n\nPRESS CONTROL TO VIEW CREDITS\n\nPRESS ESCAPE TO LEAVE FOREVER AND NOT COME BACK', 15);
+
+		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
+
+		if (gamepad != null)
+		{
+			spaceToPlay.text = 'PRESS A TO PLAY HELLPONG\n\nPRESS Y TO VIEW CREDITS\n\nPRESS B TO LEAVE FOREVER AND NOT COME BACK';
+		}
 		spaceToPlay.color = 0xFFFFFFFF;
 		spaceToPlay.font = 'assets/fonts/HelpMe-Yz7Lq.ttf';
 		spaceToPlay.alignment = CENTER;
@@ -53,16 +59,16 @@ class MenuState extends FlxState
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		if (FlxG.keys.justReleased.SPACE)
+		if (Controls.getControl('ACCEPT', 'RELEASE'))
 		{
 			FlxG.switchState(new PlayState());
 		}
-		if (FlxG.keys.justReleased.CONTROL)
+		if (Controls.getControl('CREDITS', 'RELEASE'))
 		{
 			FlxG.switchState(new CreditState());
 		}
 		#if windows
-		if (FlxG.keys.justReleased.ESCAPE)
+		if (Controls.getControl('BACK', 'RELEASE'))
 		{
 			Sys.exit(1);
 		}

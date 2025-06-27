@@ -50,6 +50,8 @@ class LossState extends FlxState
 			FlxG.sound.play('assets/sounds/fuck.ogg');
 		}
 
+		spaceToPlay.text += '\n\n(' + PlayState.thescore + ')';
+
 		FlxG.sound.music.stop();
 		new FlxTimer().start(3, function(d):Void
 		{
