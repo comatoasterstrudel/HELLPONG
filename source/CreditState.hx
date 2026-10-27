@@ -1,7 +1,8 @@
 package;
 
+#if windows
 import Discord.DiscordClient;
-import Sys;
+#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -52,7 +53,10 @@ class CreditState extends FlxState
 		{
 			busy = false;
 		});
+
+		#if windows
 		DiscordClient.changePresence('CREDITS', null);
+		#end
 	}
 
 	override public function update(elapsed:Float)

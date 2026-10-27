@@ -1,6 +1,8 @@
 package;
 
+#if windows
 import Discord.DiscordClient;
+#end
 import WiggleShader.WiggleEffectType;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -54,8 +56,10 @@ class PlayState extends FlxState
 		wiggleShader.waveSpeed = 1.8; // fasto
 		wiggleShader.shader.uTime.value = [500]; // from 4mbr0s3 2
 		wiggleShader.shader.uAlpha.value = [0.5];
+		#if windows
 		bg.shader = wiggleShader.shader;
-
+		#end
+		
 		scorecounter = new FlxText(100, 100, 0, '', 60);
 		scorecounter.color = 0xFFFF0000;
 		scorecounter.font = 'assets/fonts/HelpMe-Yz7Lq.ttf';
@@ -102,7 +106,9 @@ class PlayState extends FlxState
 		FlxG.sound.playMusic('assets/music/FuckBalls.ogg', .2);
 
 		FlxG.sound.play('assets/sounds/hello.ogg', .7);
+		#if windows
 		DiscordClient.changePresence('IN THE CAGE', null);
+		#end
 	}
 
 	override public function update(elapsed:Float)

@@ -93,4 +93,7 @@
 		<icon path="assets/images/ball.png" />
 
 	<!--Place custom nodes like icons here-->
+
+	<window allow-shaders="true" if="html5" />
+	<window hardware="true" if="html5" />
 </project>

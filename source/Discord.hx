@@ -1,3 +1,4 @@
+#if windows
 package;
 
 import Discord.DiscordClient;
@@ -83,3 +84,5 @@ class DiscordClient
 		});
 	}
 }
+
+#end

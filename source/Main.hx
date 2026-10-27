@@ -1,6 +1,8 @@
 package;
 
+#if windows
 import Discord.DiscordClient;
+#end
 import flixel.FlxGame;
 import openfl.display.Sprite;
 
@@ -10,6 +12,8 @@ class Main extends Sprite
 	{
 		super();
 		addChild(new FlxGame(0, 0, MenuState));
+		#if windows
 		DiscordClient.initialize();
+		#end
 	}
 }

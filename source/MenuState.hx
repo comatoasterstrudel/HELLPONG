@@ -1,7 +1,8 @@
 package;
-
+#if windows
 import Discord.DiscordClient;
 import Sys;
+#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -35,14 +36,22 @@ class MenuState extends FlxState
 		bgColor = 0xFF341717;
 
 		spaceToPlay = new FlxText(100, 300, 0,
-			'PRESS SPACE TO PLAY HELLPONG\n\nPRESS CONTROL TO VIEW CREDITS\n\nPRESS ESCAPE TO LEAVE FOREVER AND NOT COME BACK', 15);
+			'PRESS SPACE TO PLAY HELLPONG\n\nPRESS CONTROL TO VIEW CREDITS', 15);
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
 		if (gamepad != null)
 		{
-			spaceToPlay.text = 'PRESS A TO PLAY HELLPONG\n\nPRESS Y TO VIEW CREDITS\n\nPRESS B TO LEAVE FOREVER AND NOT COME BACK';
+			spaceToPlay.text = 'PRESS A TO PLAY HELLPONG\n\nPRESS Y TO VIEW CREDITS';
 		}
+		#if windows
+		if (gamepad != null)
+		{
+			spaceToPlay.text += "\n\nPRESS B TO LEAVE FOREVER AND NOT COME BACK";
+		} else {
+			spaceToPlay.text += "\n\nPRESS ESCAPE TO LEAVE FOREVER AND NOT COME BACK";
+		}
+		#end
 		spaceToPlay.color = 0xFFFFFFFF;
 		spaceToPlay.font = 'assets/fonts/HelpMe-Yz7Lq.ttf';
 		spaceToPlay.alignment = CENTER;
@@ -62,8 +71,9 @@ class MenuState extends FlxState
 		{
 			busy = false;
 		});
-
+		#if windows
 		DiscordClient.changePresence('MENU', null);
+		#end
 	}
 
 	override public function update(elapsed:Float)

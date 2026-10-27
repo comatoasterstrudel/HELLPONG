@@ -138,7 +138,7 @@ class WiggleEffect extends FlxShader
 		void main()
 		{
 			vec2 uv = sineWave(openfl_TextureCoordv);
-			gl_FragColor = texture2D(bitmap, uv);
+			gl_FragColor = flixel_texture2D(bitmap, uv);
 			gl_FragColor.a = 50;
 		}')
 	public function new()

@@ -1,7 +1,8 @@
 package;
-
+#if windows
 import Discord.DiscordClient;
-import Sys;
+#end
+
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -38,7 +39,9 @@ class LossState extends FlxState
 			jerma.screenCenter(X);
 			jerma.y = FlxG.height - jerma.height;
 			FlxG.sound.play('assets/sounds/jerma.ogg');
+			#if windows
 			DiscordClient.changePresence('JERMA', null);
+			#end
 		}
 		else
 		{
@@ -51,7 +54,10 @@ class LossState extends FlxState
 			FlxG.sound.music.stop();
 
 			FlxG.sound.play('assets/sounds/fuck.ogg');
+
+			#if windows
 			DiscordClient.changePresence('FUCK', null);
+			#end
 		}
 
 		spaceToPlay.text += '\n\n(' + PlayState.thescore + ')';
